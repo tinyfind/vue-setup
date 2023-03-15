@@ -20,11 +20,7 @@
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.vue",
-    "tests/**/*.ts",
-    "tests/**/*.tsx"
+    "**/*.ts"
   ],
   "exclude": ["node_modules", "mock", "build", "dist"]
 }

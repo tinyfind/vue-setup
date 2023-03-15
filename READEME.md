@@ -115,6 +115,22 @@ export default function () {
 
 
 ### `tools`
+> `provide`
+- 向子孙组件暴露数据
+```ts
+  type Provide = (key:string|Symbol,value:any)=>void
+```
+```js
+  provide("color$1","red")
+```
+> `inject`
+- 获取父祖组件暴露的数据
+```ts
+  type Inject = <T>(key:string|Symbol, defaultValue:T|(()=>T), treatDefaultAsFactory:boolean)=>T
+```
+```js
+  const name = inject('name','dong')
+```
 > `isRef`
 - 判断是否是`ref`响应式对象
 
@@ -175,6 +191,7 @@ export default function () {
 >onDeactivated
 
 >onErrorCaptured
+
 
 
 
