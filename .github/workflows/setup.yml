@@ -3,8 +3,11 @@ name: NodeJS with Webpack
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+#   pull_request:
+#     branches: [ "main" ]
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -32,4 +35,4 @@ jobs:
         git config user.email 2710732812@qq.com
         git add .
         git commit -m "deploy"
-        git push --force origin
+        git push --force origin main
