@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 18.x]
+        node-version: [18.x]
 
     steps:
     - uses: actions/checkout@v3
@@ -30,5 +30,6 @@ jobs:
       run: |
         git config user.name dong
         git config user.email 2710732812@qq.com
+        git add .
         git commit -m "deploy"
-        git push
+        git push --force origin
