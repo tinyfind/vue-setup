@@ -1,6 +1,6 @@
 {
   "name": "vue2-setup",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "type": "module",
   "description": "setup for vue 2",
   "main": "./dist/vue-setup.umd.js",
