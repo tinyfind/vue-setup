@@ -36,7 +36,7 @@ type ComputedOption = {
     set?: Function;
 } | Function;
 export declare function computed(option: ComputedOption): Ref<any>;
-export declare function reactive<T>(target: T): T;
+export declare function reactive<T extends Object>(target: T): T;
 export declare function provide(key: string | symbol, value: any): void;
 export declare function inject<T extends string | symbol>(key: T, defaultValue: T | (() => T), treatDefaultAsFactory?: boolean): T;
 export {};
