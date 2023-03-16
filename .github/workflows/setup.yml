@@ -22,9 +22,11 @@ jobs:
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
+      env:
+        NODE_AUTH_TOKEN: ${{secrets.npm_token}}
       with:
         node-version: ${{ matrix.node-version }}
-
+        registry-url: https://registry.npmjs.org/
     - name: Build
       run: |
         npm install
@@ -36,3 +38,6 @@ jobs:
         git add .
         git commit -m "deploy"
         git push --force origin main
+    - name: Publish
+      run: |
+        npm public
