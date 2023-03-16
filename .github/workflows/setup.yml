@@ -40,4 +40,4 @@ jobs:
         git push --force origin main
     - name: Publish
       run: |
-        npm public
+        npm publish
