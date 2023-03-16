@@ -1,0 +1,38 @@
+name: NodeJS with Webpack
+
+on:
+  push:
+    branches: [ "main" ]
+#   pull_request:
+#     branches: [ "main" ]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Build
+      run: |
+        npm install
+        npm run build
+    - name: Deploy
+      run: |
+        git config user.name dong
+        git config user.email 2710732812@qq.com
+        git add .
+        git commit -m "deploy"
+        git push --force origin main
