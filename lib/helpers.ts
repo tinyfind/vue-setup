@@ -33,6 +33,10 @@ export function isFunction(value:any):boolean {
   return typeof value === "function";
 }
 
+export function isObject(target:any):boolean {
+  return Object.prototype.toString.call(target) === '[object Object]'
+}
+
 export function getWatchTarget(target, option) {
   if (isFunction(target)) return [target, option];
   if (isReactive(target))

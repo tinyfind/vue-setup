@@ -19,29 +19,30 @@ import {
   getWatchTarget,
   REFTYPE,
   warn,
-  isFunction
+  isFunction,
+  isObject,
 } from "./helpers";
 
-import type { WatchOptions, ComponentOptions, CreateElement, VNode} from "vue";
-import type { Vue} from "vue/types/vue";
+import type { WatchOptions, ComponentOptions, CreateElement, VNode } from "vue";
+import type { Vue } from "vue/types/vue";
 
 class Current {
   #instance = null;
   get instance() {
-      if (!this.#instance) {
-          return warn("hooks must used in setup")
-      }
-      return this.#instance
+    if (!this.#instance) {
+      return warn("hooks must used in setup");
+    }
+    return this.#instance;
   }
   set instance(instance) {
-      this.#instance = instance
+    this.#instance = instance;
   }
 }
 
 // 当前实例
-let current:Current = new Current()
+let current: Current = new Current();
 
-export function getCurrentInstance():Vue {
+export function getCurrentInstance(): Vue {
   return current.instance;
 }
 
@@ -89,35 +90,34 @@ function observerSetup(setupState, instance) {
 
 type Props = Record<string, any>;
 type Context = {
-    attrs?:Record<string, any>,
-    emits?:Function,
-    slots?:Function
-    // expose
-}
-type Render = (CreateElement:CreateElement)=>VNode
-type Setup = (props:Props,context:Context)=>Object|Render
-type DefineComponentOptions = ComponentOptions<Vue>&{setup?:Setup}
-export function defineComponent(option:DefineComponentOptions) {
+  attrs?: Record<string, any>;
+  emits?: Function;
+  slots?: Function;
+  // expose
+};
+type Render = (CreateElement: CreateElement) => VNode;
+type Setup = (props: Props, context: Context) => Object | Render;
+type DefineComponentOptions = ComponentOptions<Vue> & { setup?: Setup };
+export function defineComponent(option: DefineComponentOptions) {
   // 针对响应式数据 绑定至 data
-  if (typeof option.setup !== "function") return option;
+  if (!isFunction(option.setup)) return option;
   const mixinComponent = {
     created() {
       current.instance = this;
       try {
-        const setupState = option.setup.call(
+        const setupResult = option.setup.call(
           undefined,
           ...getSetupParams(this)
         );
 
-        if (typeof setupState === "function") {
-          return (this.$options.render = setupState);
-        } else if (typeof setupState === "object") {
+        if (isFunction(setupResult)) {
+          return (this.$options.render = setupResult);
+        } else if (isObject(setupResult)) {
         }
-        observerSetup(setupState, this);
+        observerSetup(setupResult, this);
         // 不需要放在$data中
       } finally {
         current.instance = null;
-        delete option.setup;
       }
     },
   };
@@ -127,7 +127,7 @@ export function defineComponent(option:DefineComponentOptions) {
 
 // 初始入口
 // 在setup this 并不会指向实例，所以需要
-export function nextTick(callback?: Function):Promise<void> {
+export function nextTick(callback?: Function): Promise<void> {
   return $nextTick.call(current.instance, callback);
 }
 
@@ -170,41 +170,41 @@ export function watchEffect(effectFun: EffectFunWatchEffect): Function {
 }
 
 export function onBeforeMount(callback: Function) {
-  return $once.call(current.instance, "hook:beforeMount", callback);
+  $once.call(current.instance, "hook:beforeMount", callback);
 }
 
 export function onMounted(callback: Function) {
-  return $once.call(current.instance, "hook:mounted", callback);
+  $once.call(current.instance, "hook:mounted", callback);
 }
 
 export function onBeforeUpdate(callback: Function) {
-  return $on.call(current.instance, "hook:beforeUpdate", callback);
+  $on.call(current.instance, "hook:beforeUpdate", callback);
 }
 
 export function onUpdated(callback: Function) {
-  return $on.call(current.instance, "hook:updated", callback);
+  $on.call(current.instance, "hook:updated", callback);
 }
 
 export function onBeforeUnmount(callback: Function) {
-  return $once.call(current.instance, "hook:beforeDestroy", callback);
+  $once.call(current.instance, "hook:beforeDestroy", callback);
 }
 
 export function onUnmounted(callback: Function) {
-  return $once.call(current.instance, "hook:destroyed", callback);
+  $once.call(current.instance, "hook:destroyed", callback);
 }
 
 export function onActivated(callback: Function) {
-  return $on.call(current.instance, "hook:activated", callback);
+  $on.call(current.instance, "hook:activated", callback);
 }
 
 export function onDeactivated(callback: Function) {
-  return $on.call(current.instance, "hook:deactivated", callback);
+  $on.call(current.instance, "hook:deactivated", callback);
 }
 
 export function onErrorCaptured(
   callback: (err: Error, vm: Vue, info: string) => boolean | void
 ) {
-  return $on.call(current.instance, "hook:errorCaptured", callback);
+  (current.instance.$options.errorCaptured ??= []).push(callback);
 }
 
 type Ref<T> = { value: T };
@@ -228,10 +228,10 @@ type ComputedOption =
 export function computed(option: ComputedOption): Ref<any> {
   let get, set, cacheValue;
 
-  if (typeof option === "object") {
+  if (typeof option == "object") {
     get = option.get;
     set = option.set;
-  } else if (typeof option === "function") {
+  } else if (isFunction(option)) {
     get = option;
   }
 
@@ -253,38 +253,48 @@ export function computed(option: ComputedOption): Ref<any> {
   return computeRef;
 }
 
-export function reactive<T>(target: T): T {
-  return observe(target);
+export function reactive<T extends Object>(target: T): T {
+  if (isObject(target)) {
+    return observe(target);
+  }
+  if (Array.isArray(target)) {
+    warn("Array should use ref");
+  } else {
+    warn("param should type Object");
+  }
+  return target;
 }
 
-export function provide(key:string|symbol, value:any) {
+export function provide(key: string | symbol, value: any) {
   // 补充 provided
-  const instance = current.instance
-  Object.assign(instance._provided ??= {}, { [key]: value })
+  const instance = current.instance;
+  Object.assign((instance._provided ??= {}), { [key]: value });
 }
 
-
-export function inject<T extends string|symbol>(key:T, defaultValue:T|(()=>T), treatDefaultAsFactory:boolean = false):T {
+export function inject<T extends string | symbol>(
+  key: T,
+  defaultValue: T | (() => T),
+  treatDefaultAsFactory: boolean = false
+): T {
   // vue2 $parent递归
   // vue3/2.7+ Object.create() 原型链
-  const args = arguments
-  const instance = current.instance
-  const findProvideValue = (instance:Vue, key:string|symbol) => {
-      if (!instance) {
-          if (args.length > 1) {
-              return treatDefaultAsFactory && isFunction(defaultValue)
-                  ? (defaultValue as Function)!.call(instance)
-                  : defaultValue;
-          }
-          else {
-              return warn(`injection "${String(key)}" not found.`);
-          }
-      } else if (instance['_provided'] && key in instance['_provided']) {
-          return instance['_provided'][key]
+  const args = arguments;
+  const instance = current.instance;
+  const findProvideValue = (instance: Vue, key: string | symbol) => {
+    if (!instance) {
+      if (args.length > 1) {
+        return treatDefaultAsFactory && isFunction(defaultValue)
+          ? (defaultValue as Function)!.call(instance)
+          : defaultValue;
       } else {
-          return findProvideValue(instance['$parent'], key)
+        return warn(`injection "${String(key)}" not found.`);
       }
-  }
+    } else if (instance["_provided"] && key in instance["_provided"]) {
+      return instance["_provided"][key];
+    } else {
+      return findProvideValue(instance["$parent"], key);
+    }
+  };
 
-  return findProvideValue(instance.$parent, key)
+  return findProvideValue(instance.$parent, key);
 }

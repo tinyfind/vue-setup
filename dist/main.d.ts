@@ -18,15 +18,15 @@ type EffectFunWatch = (value: any, oldValue: any, onCleanup: (clean?: Function) 
 export declare function watch(target: object | Function, effectFun?: EffectFunWatch, option?: WatchOptions): any;
 type EffectFunWatchEffect = (onCleanup: (clean?: Function) => void) => void;
 export declare function watchEffect(effectFun: EffectFunWatchEffect): Function;
-export declare function onBeforeMount(callback: Function): any;
-export declare function onMounted(callback: Function): any;
-export declare function onBeforeUpdate(callback: Function): any;
-export declare function onUpdated(callback: Function): any;
-export declare function onBeforeUnmount(callback: Function): any;
-export declare function onUnmounted(callback: Function): any;
-export declare function onActivated(callback: Function): any;
-export declare function onDeactivated(callback: Function): any;
-export declare function onErrorCaptured(callback: (err: Error, vm: Vue, info: string) => boolean | void): any;
+export declare function onBeforeMount(callback: Function): void;
+export declare function onMounted(callback: Function): void;
+export declare function onBeforeUpdate(callback: Function): void;
+export declare function onUpdated(callback: Function): void;
+export declare function onBeforeUnmount(callback: Function): void;
+export declare function onUnmounted(callback: Function): void;
+export declare function onActivated(callback: Function): void;
+export declare function onDeactivated(callback: Function): void;
+export declare function onErrorCaptured(callback: (err: Error, vm: Vue, info: string) => boolean | void): void;
 type Ref<T> = {
     value: T;
 };

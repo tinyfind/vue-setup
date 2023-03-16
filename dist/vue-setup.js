@@ -6,9 +6,9 @@ var h = (n, e, t) => (b(n, e, "read from private field"), t ? t.call(n) : e.get(
   if (e.has(n))
     throw TypeError("Cannot add the same private member more than once");
   e instanceof WeakSet ? e.add(n) : e.set(n, t);
-}, _ = (n, e, t, r) => (b(n, e, "write to private field"), r ? r.call(n, t) : e.set(n, t), t);
-import w from "vue";
-const { $on: l, $once: d, $watch: R, $nextTick: P } = w.prototype, $ = Symbol("REFTYPE"), m = w.observable, O = m({}).__ob__.constructor;
+}, _ = (n, e, t, o) => (b(n, e, "write to private field"), o ? o.call(n, t) : e.set(n, t), t);
+import $ from "vue";
+const { $on: a, $once: d, $watch: w, $nextTick: P } = $.prototype, R = Symbol("REFTYPE"), m = $.observable, O = m({}).__ob__.constructor;
 function T(n) {
   const e = n.$props, t = {
     attrs: n.$attrs,
@@ -20,14 +20,14 @@ function T(n) {
 function E(n) {
   return !!(n && n.__ob__ && n.__ob__ instanceof O);
 }
-function a(n) {
-  return !!(n && n.type === $);
+function l(n) {
+  return !!(n && n.type === R);
 }
 function j(n) {
   return typeof n == "function";
 }
 function U(n, e) {
-  return j(n) ? [n, e] : E(n) ? [() => n, Object.assign({ deep: !0 }, e)] : a(n) ? [() => n.value, e] : [() => n, e];
+  return j(n) ? [n, e] : E(n) ? [() => n, Object.assign({ deep: !0 }, e)] : l(n) ? [() => n.value, e] : [() => n, e];
 }
 function C(n) {
   console.warn(n);
@@ -45,28 +45,28 @@ class y {
   }
 }
 f = new WeakMap();
-let o = new y();
+let r = new y();
 function Y() {
-  return o.instance;
+  return r.instance;
 }
 function B(n, e) {
   Reflect.defineProperty(e, "setupState", { value: n }), Object.keys(n).forEach((t) => {
     if (Reflect.defineProperty(e, t, {
       get() {
-        const r = Reflect.get(n, t);
-        return a(r) ? Reflect.get(r, "value") : r;
+        const o = Reflect.get(n, t);
+        return l(o) ? Reflect.get(o, "value") : o;
       },
-      set(r) {
-        return a(n[t]) ? Reflect.set(n[t], "value", r) : Reflect.set(n, t, r), r;
+      set(o) {
+        return l(n[t]) ? Reflect.set(n[t], "value", o) : Reflect.set(n, t, o), o;
       }
-    }), a(n[t])) {
-      const r = n[t];
+    }), l(n[t])) {
+      const o = n[t];
       Reflect.defineProperty(e, t, {
         get() {
-          return r.value;
+          return o.value;
         },
         set(c) {
-          return r.value = c, c;
+          return o.value = c, c;
         }
       });
     } else
@@ -78,7 +78,7 @@ function A(n) {
     return n;
   const e = {
     created() {
-      o.instance = this;
+      r.instance = this;
       try {
         const t = n.setup.call(
           void 0,
@@ -88,80 +88,81 @@ function A(n) {
           return this.$options.render = t;
         B(t, this);
       } finally {
-        o.instance = null, delete n.setup;
+        r.instance = null;
       }
     }
   };
   return (n.mixins = n.mixins || []).unshift(e), n;
 }
 function I(n) {
-  return P.call(o.instance, n);
+  return P.call(r.instance, n);
 }
 function g(n, e, t) {
-  const [r, c] = U(n, t);
+  const [o, c] = U(n, t);
   let i = new Function();
-  const u = (p) => {
+  const s = (p) => {
     i = p;
-  }, s = (p, x) => {
-    i(), e == null || e(p, x, u);
+  }, u = (p, x) => {
+    i(), e == null || e(p, x, s);
   };
-  return R.call(o.instance, r, s, c);
+  return w.call(r.instance, o, u, c);
 }
 function W(n) {
   let e = new Function();
   const t = (c) => {
     e = c;
-  }, r = () => {
+  }, o = () => {
     e(), n == null || n(t);
   };
-  return R.call(o.instance, r, new Function(), {
+  return w.call(r.instance, o, new Function(), {
     immediate: !0
   });
 }
 function q(n) {
-  return d.call(o.instance, "hook:beforeMount", n);
+  d.call(r.instance, "hook:beforeMount", n);
 }
 function z(n) {
-  return d.call(o.instance, "hook:mounted", n);
+  d.call(r.instance, "hook:mounted", n);
 }
 function F(n) {
-  return l.call(o.instance, "hook:beforeUpdate", n);
+  a.call(r.instance, "hook:beforeUpdate", n);
 }
 function G(n) {
-  return l.call(o.instance, "hook:updated", n);
+  a.call(r.instance, "hook:updated", n);
 }
 function H(n) {
-  return d.call(o.instance, "hook:beforeDestroy", n);
+  d.call(r.instance, "hook:beforeDestroy", n);
 }
 function J(n) {
-  return d.call(o.instance, "hook:destroyed", n);
+  d.call(r.instance, "hook:destroyed", n);
 }
 function K(n) {
-  return l.call(o.instance, "hook:activated", n);
+  a.call(r.instance, "hook:activated", n);
 }
 function L(n) {
-  return l.call(o.instance, "hook:deactivated", n);
+  a.call(r.instance, "hook:deactivated", n);
 }
 function N(n) {
-  return l.call(o.instance, "hook:errorCaptured", n);
+  var e, t;
+  ((t = (e = r.instance.$options).errorCaptured) != null ? t : e.errorCaptured = []).push(n);
 }
 function M(n) {
   return Object.seal(
     m({
       value: n,
       get type() {
-        return $;
+        return R;
       }
     })
   );
 }
 function Q(n) {
-  let e, t, r;
+  let e, t, o;
   typeof n == "object" ? (e = n.get, t = n.set) : typeof n == "function" && (e = n);
-  const c = M(r);
+  const c = M(o);
   return g(
     e,
-    (i, u) => {
+    (i, s) => {
       c.value = i;
     },
     { immediate: !0 }
@@ -173,12 +174,12 @@ function X(n) {
   return m(n);
 }
 function Z(n, e) {
-  var r;
-  const t = o.instance;
-  Object.assign((r = t._provided) != null ? r : t._provided = {}, { [n]: e });
+  var o;
+  const t = r.instance;
+  Object.assign((o = t._provided) != null ? o : t._provided = {}, { [n]: e });
 }
 function k(n, e, t = !1) {
-  const r = arguments, c = o.instance, i = (u, s) => u ? u._provided && s in u._provided ? u._provided[s] : i(u.$parent, s) : r.length > 1 ? t && j(e) ? e.call(u) : e : C(`injection "${String(s)}" not found.`);
+  const o = arguments, c = r.instance, i = (s, u) => s ? s._provided && u in s._provided ? s._provided[u] : i(s.$parent, u) : o.length > 1 ? t && j(e) ? e.call(s) : e : C(`injection "${String(u)}" not found.`);
   return i(c.$parent, n);
 }
 export {

@@ -32,7 +32,7 @@
 - 如果需要返回组件函数，直接返回即可
 ```js
   defineComponent({
-    setup(){
+    setup(props,{emit,attrs,slots}){
       const num = ref(0)
 
       return {
@@ -95,6 +95,7 @@ export default function () {
   ```
 
 > `reactive`
+- 仅支持`Object`,`Array`建议使用`ref`
 
   ```js
     const obj = reactive({name:'dong'})
@@ -169,11 +170,10 @@ export default function () {
     })
 ```
 ### `lifeCycle`
+- 参数为`Function`，具体参考 `vue` 生命周期
 ```typeScript
-  type LifeCycle = (Function)=>void
+  type LifeCycle = (callback:Function)=>void
 ```
->setup
-
 >onBeforeMounted
 
 >onMounted
@@ -191,6 +191,7 @@ export default function () {
 >onDeactivated
 
 >onErrorCaptured
+
 
 
 
